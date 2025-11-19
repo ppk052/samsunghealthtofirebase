@@ -162,7 +162,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void readHeartRateData(HealthDataStore healthStore) {
         try {
-            // 1. Raw use of parameterized class 'ReadDataRequest' 경고 해결을 위해 타입 명시
             ReadDataRequest readRequest = DataTypes.HEART_RATE.getReadDataRequestBuilder()
                     .setOrdering(Ordering.DESC)
                     .setPageSize(1)
