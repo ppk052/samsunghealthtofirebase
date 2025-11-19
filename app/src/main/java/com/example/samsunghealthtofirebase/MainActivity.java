@@ -170,14 +170,6 @@ public class MainActivity extends AppCompatActivity {
             // 2. 데이터 읽기 요청 및 비동기 콜백 설정
             // 2.1. 성공 콜백 (onSuccess) 정의
             Consumer<DataResponse<HealthDataPoint>> onSuccess = response -> {
-                String count = "0";
-                try {
-                    // 💡 getDataList() 사용으로 수정
-                    count = String.valueOf(response.getDataList().size());
-                } finally {
-                    // ❌ close() 메소드를 제거합니다.
-                    // DataResponse에 close()가 없으므로 호출하지 않습니다.
-                }
                 HealthDataPoint data = response.getDataList().get(0);
                 if(heartDate != data.getEndLocalDateTime()){
                     heartDate = data.getEndLocalDateTime();
