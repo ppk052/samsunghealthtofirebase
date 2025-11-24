@@ -3,6 +3,7 @@ package com.example.samsunghealthtofirebase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +35,8 @@ import java.util.function.Consumer;
 public class MainActivity extends AppCompatActivity {
 
     Button button;
+    Button buttonHigh;
+    Button buttonLow;
     TextView textView;
     LocalDateTime heartDate;
     Float heartRate;
@@ -42,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference heartDateRef;
     DatabaseReference checkDateRef;
     Boolean sync = false;
+    boolean high = false;
+    boolean low = false;
 
     private final Set<Permission> permissions = Set.of(Permission.of(DataTypes.HEART_RATE, AccessType.READ));
     private Handler syncHandler;
@@ -57,6 +62,39 @@ public class MainActivity extends AppCompatActivity {
         button = findViewById(R.id.getButton);
         button.setText("동기화시작");
         button.setOnClickListener(view -> reconnect());
+        buttonHigh = findViewById(R.id.buttonHigh);
+        buttonHigh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(buttonHigh.getText().equals("높은맥박")){
+                    buttonHigh.setText("정상화");
+                    if(low){
+                        low = false;
+                        buttonLow.setText("낮은맥박");
+                    }
+                    high = true;
+                } else {
+                    high = false;
+                }
+            }
+        });
+        buttonLow = findViewById(R.id.buttonLow);
+        buttonLow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(buttonLow.getText().equals("낮은맥박")){
+                    buttonLow.setText("정상화");
+                    if(high){
+                        high=false;
+                        buttonHigh.setText("높은맥박");
+                    }
+                    low = true;
+                } else {
+                    buttonLow.setText("낮은맥박");
+                    low = false;
+                }
+            }
+        });
         database = FirebaseDatabase.getInstance();
         heartRateRef = database.getReference("HeartRate/HeartRate");
         heartDateRef = database.getReference("HeartRate/HeartDate");
@@ -170,7 +208,12 @@ public class MainActivity extends AppCompatActivity {
             // 2.1. 성공 콜백 (onSuccess) 정의
             Consumer<DataResponse<HealthDataPoint>> onSuccess = response -> {
                 HealthDataPoint data = response.getDataList().get(0);
-                if(heartDate != data.getEndLocalDateTime()){
+                if(high){
+                    heartRate = 200f;
+                    heartRateRef.setValue(heartRate);
+                } else if(low) {
+                    heartRate = 50f;
+                } else if(heartDate != data.getEndLocalDateTime()){
                     heartDate = data.getEndLocalDateTime();
                     heartRate = data.getValue(DataType.HeartRateType.HEART_RATE);
                     heartRateRef.setValue(heartRate);
