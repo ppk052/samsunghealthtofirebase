@@ -3,6 +3,7 @@ package com.example.samsunghealthtofirebase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     high = true;
                 } else {
+                    buttonHigh.setText("높은맥박");
                     high = false;
                 }
             }
@@ -208,16 +210,18 @@ public class MainActivity extends AppCompatActivity {
             // 2.1. 성공 콜백 (onSuccess) 정의
             Consumer<DataResponse<HealthDataPoint>> onSuccess = response -> {
                 HealthDataPoint data = response.getDataList().get(0);
+                Log.d("심박수", "시간 : " + data.getEndLocalDateTime() + " 심박수 : " + data.getValue(DataType.HeartRateType.HEART_RATE));
                 if(high){
                     heartRate = 200f;
                     heartRateRef.setValue(heartRate);
                 } else if(low) {
                     heartRate = 50f;
+                    heartRateRef.setValue(heartRate);
                 } else if(heartDate != data.getEndLocalDateTime()){
                     heartDate = data.getEndLocalDateTime();
                     heartRate = data.getValue(DataType.HeartRateType.HEART_RATE);
-                    heartRateRef.setValue(heartRate);
-                    heartDateRef.setValue(heartDate.toString());
+                    heartRateRef.setValue(data.getValue(DataType.HeartRateType.HEART_RATE));
+                    heartDateRef.setValue(data.getEndLocalDateTime().toString());
                 }
                 checkDateRef.setValue(LocalDateTime.now().toString());
             };
