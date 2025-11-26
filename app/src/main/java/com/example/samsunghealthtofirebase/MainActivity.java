@@ -1,5 +1,6 @@
 package com.example.samsunghealthtofirebase;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -15,6 +16,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.gms.wearable.MessageClient;
+import com.google.android.gms.wearable.MessageEvent;
+import com.google.android.gms.wearable.Wearable;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.samsung.android.sdk.health.data.HealthDataService;
@@ -28,6 +32,7 @@ import com.samsung.android.sdk.health.data.request.Ordering;
 import com.samsung.android.sdk.health.data.request.ReadDataRequest;
 import com.samsung.android.sdk.health.data.response.DataResponse;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -52,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private final Set<Permission> permissions = Set.of(Permission.of(DataTypes.HEART_RATE, AccessType.READ));
     private Handler syncHandler;
     private static final long syncInterval = 5000;
+    private static final String HR_PATH = "/heart_rate_data";
 
 
     @Override
@@ -241,4 +247,20 @@ public class MainActivity extends AppCompatActivity {
             textView.setText("Read Request Exception: " + e.getMessage());
         }
     }
+
+//    @Override
+//    public void onMessageReceived(MessageEvent messageEvent){
+//        Log.d("디버깅","시계에서 데이터 받음");
+//        if(messageEvent.getPath().equals(HR_PATH)){
+//            String receivedData = new String(messageEvent.getData(), StandardCharsets.UTF_8);
+//            try{
+//                String[] parts = receivedData.split(",");
+//                String heartRateDate = parts[0];
+//                String heartRate = parts[1];
+//                Log.d("디버깅", "심박수시간 : " + heartRateDate + ", 심박수 : " + heartRate);
+//            } catch (Exception e){
+//                Log.e("디버깅","데이터파싱오류 : " + e.getMessage());
+//            }
+//        }
+//    }
 }
